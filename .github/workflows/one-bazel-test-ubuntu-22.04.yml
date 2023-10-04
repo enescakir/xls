@@ -4,26 +4,21 @@
 name: Solo Bazel Test (Ubuntu 22.04)
 
 on:
-  workflow_dispatch:
-    inputs:
-      target:
-        description: 'Bazel Target Pattern'
-        default: '//xls/dslx:interpreter_test'
-        required: true
-      runs_per_test:
-        description: 'Number of Runs'
-        default: '1'
-        required: true
+  push:
+    branches:
+    - build-test
 
 env:
-  BAZEL_TARGET: ${{ github.event.inputs.target }}
-  BAZEL_RUNS_PER_TEST: ${{ github.event.inputs.runs_per_test }}
+  BAZEL_TARGET: '//xls/dslx:interpreter_test'
+  BAZEL_RUNS_PER_TEST: 1
 
 jobs:
   build:
-    name: Bazel Test (opt)
-    runs-on:
-      labels: ubuntu-22.04-64core
+    strategy:
+      matrix:
+        runs-on: [ubuntu-22.04, ubicloud-standard-2, ubicloud-standard-4, ubicloud-standard-8, ubicloud-standard-16]
+    name: Bazel Test ${{matrix.runs-on}}
+    runs-on: ${{matrix.runs-on}}
     timeout-minutes: 600
     steps:
       - uses: actions/checkout@v2

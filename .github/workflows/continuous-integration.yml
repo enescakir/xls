@@ -6,7 +6,7 @@ on:
   # Avoid triggering on pushes to /all/ open PR branches.
   push:
     branches:
-      - main
+      - build-test
     paths-ignore:
       # Do not trigger action when docs are updated.
       - 'docs/**'
@@ -18,9 +18,12 @@ on:
 
 jobs:
   build:
-    name: Bazel Test All (opt)
-    runs-on:
-      labels: ubuntu-20.04-64core
+    strategy:
+      matrix:
+        runs-on: [ubuntu-22.04, ubicloud-standard-2, ubicloud-standard-4, ubicloud-standard-8, ubicloud-standard-16]
+    name: Bazel Test All ${{matrix.runs-on}}
+    runs-on: ${{matrix.runs-on}}
+
     timeout-minutes: 600
     steps:
       - uses: actions/checkout@v2
